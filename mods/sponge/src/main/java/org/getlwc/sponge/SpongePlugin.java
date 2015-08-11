@@ -40,8 +40,10 @@ import org.getlwc.ItemStack;
 import org.getlwc.ServerLayer;
 import org.getlwc.Version;
 import org.getlwc.World;
+import org.getlwc.entity.Entity;
 import org.getlwc.entity.Player;
 import org.getlwc.lang.Locale;
+import org.getlwc.sponge.entity.SpongeEntity;
 import org.getlwc.sponge.listeners.SpongeEventListener;
 import org.getlwc.sponge.permission.SpongePermissionHandler;
 import org.getlwc.sponge.world.SpongeBlock;
@@ -123,6 +125,20 @@ public class SpongePlugin {
     }
 
     /**
+     * Wraps the given sponge entity
+     *
+     * @param entity
+     * @return
+     */
+	public Entity wrapEntity(org.spongepowered.api.entity.Entity entity) {
+        if (entity instanceof org.spongepowered.api.entity.player.Player) {
+            return wrapPlayer((org.spongepowered.api.entity.player.Player) entity);
+        } else {
+            return new SpongeEntity(entity);
+        }
+	}
+
+    /**
      * Wraps the given sponge block
      *
      * @param block
@@ -141,6 +157,16 @@ public class SpongePlugin {
         }
 
         return new SpongeBlock(world, block);
+    }
+
+    /**
+     * Get a world
+     *
+     * @param worldName
+     * @return
+     */
+    public World getWorld(String worldName) {
+        return layer.getWorld(worldName);
     }
 
     /**
