@@ -30,12 +30,9 @@ package org.getlwc.sponge.listeners;
 
 import org.getlwc.Block;
 import org.getlwc.EventHelper;
-import org.getlwc.World;
 import org.getlwc.entity.Entity;
 import org.getlwc.entity.Player;
 import org.getlwc.sponge.SpongePlugin;
-import org.getlwc.sponge.entity.SpongeEntity;
-import org.getlwc.sponge.world.SpongeBlock;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.entity.EntityInteractBlockEvent;
@@ -84,9 +81,8 @@ public class SpongeEventListener {
 
     @Subscribe(order = Order.FIRST, ignoreCancelled = true)
     public void onEntityInteractBlock(EntityInteractBlockEvent event) {
-        Entity entity = new SpongeEntity(event.getEntity());
-        World world = plugin.getWorld(event.getEntity().getWorld().getName());
-        Block block = new SpongeBlock(world, event.getLocation());
+        Entity entity = plugin.wrapEntity(event.getEntity());
+        Block block = plugin.wrapBlock(event.getLocation());
 
         if (EventHelper.onBlockInteract(entity, block)) {
             event.setCancelled(true);
