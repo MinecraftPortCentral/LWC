@@ -26,36 +26,11 @@
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
-package org.getlwc.canary;
+package org.getlwc;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import net.canarymod.logger.Logman;
-import org.getlwc.ServerLayer;
-import org.getlwc.command.ConsoleCommandSender;
+public class Version {
 
-public class CanaryEngineGuiceModule extends AbstractModule {
-
-    private CanaryPlugin plugin;
-
-    public CanaryEngineGuiceModule(CanaryPlugin plugin) {
-        this.plugin = plugin;
-    }
-
-    @Override
-    protected void configure() {
-        bind(ServerLayer.class).to(CanaryServerLayer.class);
-        bind(ConsoleCommandSender.class).to(CanaryConsoleCommandSender.class);
-    }
-
-    @Provides
-    public CanaryPlugin provideCanaryPlugin() {
-        return plugin;
-    }
-
-    @Provides
-    public Logman provideLogman() {
-        return plugin.getLogman();
-    }
-
+	public static final String PLUGIN_ID = "LWC";
+	public static final String PLUGIN_NAME = "LWC";
+	public static final String PLUGIN_VERSION = "0.1";
 }

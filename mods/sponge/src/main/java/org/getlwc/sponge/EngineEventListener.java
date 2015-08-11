@@ -29,14 +29,18 @@
 package org.getlwc.sponge;
 
 import com.google.common.base.Optional;
+
 import org.getlwc.command.Command;
 import org.getlwc.command.CommandContext;
 import org.getlwc.command.CommandSender;
 import org.getlwc.command.ConsoleCommandSender;
 import org.getlwc.event.Listener;
 import org.getlwc.event.engine.BaseCommandRegisteredEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
+import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 
 import java.util.ArrayList;
@@ -58,21 +62,24 @@ public class EngineEventListener {
         final Command command = event.getCommand();
 
         CommandCallable callable = new CommandCallable() {
-            @Override
-            public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException {
+
+			@Override
+			public CommandResult process(CommandSource source, String arguments)
+					throws CommandException {
                 CommandSender sender = commandSourceToSender(source);
                 CommandContext.Type type = (sender instanceof ConsoleCommandSender) ? CommandContext.Type.SERVER : CommandContext.Type.PLAYER;
 
                 try {
-                    return plugin.getEngine().getCommandHandler().handleCommand(new CommandContext(type, sender, baseCommand, arguments));
+                    plugin.getEngine().getCommandHandler().handleCommand(new CommandContext(type, sender, baseCommand, arguments));
+                    return CommandResult.success();
                 } catch (org.getlwc.command.CommandException e) {
                     plugin.getEngine().getConsoleSender().sendMessage("An error was encountered while processing a command: {0}", e.getMessage());
                     e.printStackTrace();
 
                     sender.sendMessage("&4[LWC] An internal error occurred while processing this command");
-                    return false;
+                    return CommandResult.empty();
                 }
-            }
+			}
 
             @Override
             public boolean testPermission(CommandSource source) {
@@ -83,26 +90,27 @@ public class EngineEventListener {
                 }
             }
 
-            @Override
-            public Optional<String> getShortDescription() {
-                return Optional.of(command.description());
+			@Override
+			public Optional<? extends Text> getShortDescription(CommandSource arg0) {
+                return Optional.of((Text) Texts.of(command.description()));
             }
 
-            @Override
-            public Optional<String> getHelp() {
+			@Override
+			public Optional<? extends Text> getHelp(CommandSource arg0) {
                 // TODO is help just a longer description?
-                return Optional.of(command.description());
+                return Optional.of((Text) Texts.of(command.description()));
             }
 
-            @Override
-            public String getUsage() {
-                return command.usage();
+			@Override
+			public Text getUsage(CommandSource arg0) {
+                return Texts.of(command.usage());
             }
 
             @Override
             public List<String> getSuggestions(CommandSource commandSource, String s) throws CommandException {
                 return new ArrayList<>();
             }
+
         };
 
         List<String> aliases = new ArrayList<>();

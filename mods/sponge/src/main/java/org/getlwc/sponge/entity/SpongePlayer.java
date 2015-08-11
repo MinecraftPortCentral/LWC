@@ -29,11 +29,13 @@
 package org.getlwc.sponge.entity;
 
 import com.flowpowered.math.vector.Vector3d;
+
 import org.getlwc.ItemStack;
 import org.getlwc.Location;
 import org.getlwc.entity.SimplePlayer;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.getlwc.util.Color;
+import org.spongepowered.api.text.Texts;
 
 import java.util.UUID;
 
@@ -74,7 +76,7 @@ public class SpongePlayer extends SimplePlayer {
     @Override
     public void sendMessage(String message) {
         for (String line : message.split("\n")) {
-            handle.sendMessage(Color.replaceColors(line));
+            handle.sendMessage(Texts.of(Color.replaceColors(line)));
         }
     }
 

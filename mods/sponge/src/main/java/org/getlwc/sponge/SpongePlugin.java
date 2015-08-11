@@ -32,6 +32,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
+
 import org.getlwc.Block;
 import org.getlwc.Engine;
 import org.getlwc.EngineGuiceModule;
@@ -47,11 +48,12 @@ import org.getlwc.sponge.world.SpongeBlock;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.event.state.ServerStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
-import org.spongepowered.api.util.event.Subscribe;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.extent.Extent;
 
 import java.io.File;
@@ -125,7 +127,7 @@ public class SpongePlugin {
      * @param block
      * @return
      */
-    public Block wrapBlock(org.spongepowered.api.block.BlockLoc block) {
+    public Block wrapBlock(Location block) {
         Extent extent = block.getExtent();
         World world;
 
@@ -189,7 +191,7 @@ public class SpongePlugin {
 
         // TODO no integer ID available; global change to move towards string ids and not just in MaterialRegistry should be done
         // TODO no enchantment support in the API yet
-        return new ItemStack(-1, item.getQuantity(), item.getDamage(), item.getMaxStackQuantity(), new HashMap<Integer, Integer>());
+        return new ItemStack(-1, item.getQuantity(), (short) 0/*item.getDamage()*/, item.getMaxStackQuantity(), new HashMap<Integer, Integer>());
     }
 
 }

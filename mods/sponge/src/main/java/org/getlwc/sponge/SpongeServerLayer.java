@@ -64,17 +64,17 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     public String getImplementationVersion() {
-        return game.getImplementationVersion();
+        return game.getPlatform().getApiVersion();
     }
 
     @Override
     public World getDefaultWorld() {
-        return getWorld(game.getServer().get().getWorlds().iterator().next().getName());
+        return getWorld(game.getServer().getWorlds().iterator().next().getName());
     }
 
     @Override
     protected Player internalGetPlayer(String playerName) {
-        org.spongepowered.api.entity.player.Player player = game.getServer().get().getPlayer(playerName).orNull();
+        org.spongepowered.api.entity.player.Player player = game.getServer().getPlayer(playerName).orNull();
 
         if (player != null) {
             return new SpongePlayer(player);
@@ -85,7 +85,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     protected World internalGetWorld(String worldName) {
-        org.spongepowered.api.world.World world = game.getServer().get().getWorld(worldName).orNull();
+        org.spongepowered.api.world.World world = game.getServer().getWorld(worldName).orNull();
 
         if (world != null) {
             return new SpongeExtent(world);

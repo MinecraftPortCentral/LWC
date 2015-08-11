@@ -32,11 +32,11 @@ import org.getlwc.Block;
 import org.getlwc.EventHelper;
 import org.getlwc.entity.Player;
 import org.getlwc.sponge.SpongePlugin;
-import org.spongepowered.api.event.entity.living.player.PlayerInteractBlockEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
-import org.spongepowered.api.util.event.Order;
-import org.spongepowered.api.util.event.Subscribe;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.entity.player.PlayerInteractBlockEvent;
+import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
+import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
 
 public class SpongeEventListener {
 
@@ -49,20 +49,20 @@ public class SpongeEventListener {
     @SuppressWarnings("unused")
     @Subscribe
     public void onPlayerJoin(PlayerJoinEvent event) {
-        EventHelper.onPlayerJoin(plugin.wrapPlayer(event.getPlayer()));
+        EventHelper.onPlayerJoin(plugin.wrapPlayer(event.getEntity()));
     }
 
     @SuppressWarnings("unused")
     @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
-        EventHelper.onPlayerQuit(plugin.wrapPlayer(event.getPlayer()));
+        EventHelper.onPlayerQuit(plugin.wrapPlayer(event.getEntity()));
     }
 
     @SuppressWarnings("unused")
     @Subscribe(order = Order.FIRST, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractBlockEvent event) {
-        Player player = plugin.wrapPlayer(event.getPlayer());
-        Block block = plugin.wrapBlock(event.getBlock());
+        Player player = plugin.wrapPlayer(event.getEntity());
+        Block block = plugin.wrapBlock(event.getLocation());
 
         if (EventHelper.onBlockInteract(player, block)) {
             event.getCallbacks().cancelAll();

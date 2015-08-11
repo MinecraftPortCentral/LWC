@@ -55,7 +55,7 @@ public class SpongeExtent implements World {
 
     @Override
     public Block getBlockAt(int x, int y, int z) {
-        return new SpongeBlock(this, handle.getBlock(x, y, z));
+        return new SpongeBlock(this, handle.getLocation(x, y, z));
     }
 
 }

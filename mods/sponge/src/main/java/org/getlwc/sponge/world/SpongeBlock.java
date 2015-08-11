@@ -33,25 +33,27 @@ import org.getlwc.BlockType;
 import org.getlwc.SimpleEngine;
 import org.getlwc.World;
 import org.getlwc.sponge.SpongePlugin;
+import org.spongepowered.api.world.Location;
 
 public class SpongeBlock extends Block {
 
     private World world;
-    private org.spongepowered.api.block.BlockLoc handle;
+    private Location handle;
 
-    public SpongeBlock(World world, org.spongepowered.api.block.BlockLoc handle) {
+    public SpongeBlock(World world, Location handle) {
         this.world = world;
         this.handle = handle;
     }
 
     @Override
     public BlockType getType() {
-        return SimpleEngine.getInstance().getMinecraftRegistry().getBlockType(handle.getType().getId());
+        return SimpleEngine.getInstance().getMinecraftRegistry().getBlockType(handle.getBlockType().getId());
     }
 
     @Override
     public byte getData() {
-        return handle.getState().getDataValue();
+    	return 0;
+        //return handle.getBlock().getDataValue();
     }
 
     @Override
@@ -61,26 +63,26 @@ public class SpongeBlock extends Block {
 
     @Override
     public int getX() {
-        return handle.getX();
+        return handle.getBlockX();
     }
 
     @Override
     public int getY() {
-        return handle.getY();
+        return handle.getBlockY();
     }
 
     @Override
     public int getZ() {
-        return handle.getZ();
+        return handle.getBlockZ();
     }
 
     @Override
     public void setType(BlockType type) {
-        org.spongepowered.api.block.BlockType dest = SpongePlugin.instance.getGame().getRegistry().getBlock(type.getId()).orNull();
+       // org.spongepowered.api.block.BlockType dest = SpongePlugin.instance.getGame().getRegistry().getBlock(type.getId()).orNull();
 
-        if (dest != null) {
-            handle.replaceWith(dest);
-        }
+        /*if (dest != null) {
+            handle.setBlockType(dest);
+        }*/
     }
 
     @Override

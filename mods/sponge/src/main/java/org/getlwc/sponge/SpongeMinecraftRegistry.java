@@ -48,7 +48,7 @@ public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
     @Override
     protected BlockType internalGetBlockType(String id) {
-        final org.spongepowered.api.block.BlockType type = game.getRegistry().getBlock(id).orNull();
+        final org.spongepowered.api.block.BlockType type = game.getRegistry().getType(org.spongepowered.api.block.BlockType.class, id).orNull();
 
         if (type == null) {
             return null;
@@ -66,7 +66,7 @@ public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
                 @Override
                 public String getName() {
-                    return type.getTranslation().get();
+                    return type.getTranslation().getId();
                 }
             };
         }
@@ -74,7 +74,7 @@ public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
     @Override
     protected ItemType internalGetItemType(String id) {
-        final org.spongepowered.api.item.ItemType type = game.getRegistry().getItem(id).orNull();
+        final org.spongepowered.api.item.ItemType type = game.getRegistry().getType(org.spongepowered.api.item.ItemType.class, id).orNull();
 
         if (type == null) {
             return null;
@@ -97,7 +97,7 @@ public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
                 @Override
                 public String getName() {
-                    return type.getTranslation().get();
+                    return type.getTranslation().getId();
                 }
             };
         }
