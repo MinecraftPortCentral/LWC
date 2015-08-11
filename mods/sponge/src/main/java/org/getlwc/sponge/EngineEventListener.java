@@ -44,7 +44,6 @@ import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EngineEventListener {
@@ -55,7 +54,6 @@ public class EngineEventListener {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("unused")
     @Listener
     public void onRegisterBaseCommand(BaseCommandRegisteredEvent event) {
         final String baseCommand = event.getNormalizedCommand();
@@ -113,11 +111,7 @@ public class EngineEventListener {
 
         };
 
-        List<String> aliases = new ArrayList<>();
-        aliases.add(baseCommand);
-        aliases.addAll(Arrays.asList(command.aliases()));
-
-        plugin.getGame().getCommandDispatcher().register(plugin, callable, aliases);
+        plugin.getGame().getCommandDispatcher().register(plugin, callable, baseCommand);
     }
 
     /**
