@@ -33,6 +33,7 @@ import com.flowpowered.math.vector.Vector3d;
 import org.getlwc.ItemStack;
 import org.getlwc.Location;
 import org.getlwc.entity.SimplePlayer;
+import org.getlwc.lang.Locale;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.getlwc.util.Color;
 import org.spongepowered.api.text.Texts;
@@ -80,4 +81,8 @@ public class SpongePlayer extends SimplePlayer {
         }
     }
 
+    @Override
+    public boolean hasPermission(String node) {
+        return handle.hasPermission(node);
+    }
 }

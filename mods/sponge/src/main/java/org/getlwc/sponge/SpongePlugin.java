@@ -53,6 +53,7 @@ import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.event.state.ServerStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.extent.Extent;
 
@@ -89,7 +90,7 @@ public class SpongePlugin {
         engine = injector.getInstance(Engine.class);
         layer = injector.getInstance(ServerLayer.class);
 
-        engine.setPermissionHandler(new SpongePermissionHandler());
+        engine.setPermissionHandler(new SpongePermissionHandler(game.getServiceManager().potentiallyProvide(PermissionService.class)));
         engine.getEventBus().subscribe(new EngineEventListener(this));
         engine.getEventBus().post(new org.getlwc.event.server.ServerStartingEvent());
 

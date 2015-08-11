@@ -28,13 +28,29 @@
  */
 package org.getlwc.sponge.permission;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import org.getlwc.entity.Player;
 import org.getlwc.permission.PermissionHandler;
+import org.spongepowered.api.service.ServiceReference;
+import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.SubjectCollection;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 public class SpongePermissionHandler implements PermissionHandler {
+    private final ServiceReference<PermissionService> permService;
+
+    public SpongePermissionHandler(ServiceReference<PermissionService> permService) {
+        this.permService = permService;
+    }
 
     @Override
     public String getName() {
@@ -48,18 +64,28 @@ public class SpongePermissionHandler implements PermissionHandler {
 
     @Override
     public boolean hasPermission(Player player, String node) {
-        // TODO use Sponge's internal permission handler when it's available
-
-        if (!node.startsWith("lwc.mod") && !node.startsWith("lwc.admin")) {
-            return true;
-        } else {
-            return false; // TODO true if op
-        }
+        return player.hasPermission(node);
     }
 
     @Override
     public Set<String> getGroups(Player player) {
-        return new HashSet<>();
+        if (!this.permService.ref().isPresent()) {
+            return ImmutableSet.of();
+        }
+        final SubjectCollection groupColl = this.permService.ref().get().getGroupSubjects();
+        List<Subject> parent = this.permService.ref().get().getUserSubjects().get(player.getUUID().toString()).getParents();
+        return ImmutableSet.copyOf(Iterables.transform(Iterables.filter(parent, new Predicate<Subject>() {
+            @Override
+            public boolean apply(Subject input) {
+                return input.getContainingCollection().equals(groupColl);
+            }
+        }), new Function<Subject, String>() {
+            @Nullable
+            @Override
+            public String apply(Subject input) {
+                return input.getIdentifier();
+            }
+        }));
     }
 
 }
