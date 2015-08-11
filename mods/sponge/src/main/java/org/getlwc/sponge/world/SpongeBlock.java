@@ -78,11 +78,11 @@ public class SpongeBlock extends Block {
 
     @Override
     public void setType(BlockType type) {
-       // org.spongepowered.api.block.BlockType dest = SpongePlugin.instance.getGame().getRegistry().getBlock(type.getId()).orNull();
+        org.spongepowered.api.block.BlockType dest = SpongePlugin.instance.getGame().getRegistry().getType(org.spongepowered.api.block.BlockType.class, type.getId()).orNull();
 
-        /*if (dest != null) {
+        if (dest != null) {
             handle.setBlockType(dest);
-        }*/
+        }
     }
 
     @Override

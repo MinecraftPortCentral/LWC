@@ -46,26 +46,23 @@ public class SpongeEventListener {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("unused")
     @Subscribe
     public void onPlayerJoin(PlayerJoinEvent event) {
         EventHelper.onPlayerJoin(plugin.wrapPlayer(event.getEntity()));
     }
 
-    @SuppressWarnings("unused")
     @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
         EventHelper.onPlayerQuit(plugin.wrapPlayer(event.getEntity()));
     }
 
-    @SuppressWarnings("unused")
     @Subscribe(order = Order.FIRST, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractBlockEvent event) {
         Player player = plugin.wrapPlayer(event.getEntity());
         Block block = plugin.wrapBlock(event.getLocation());
 
         if (EventHelper.onBlockInteract(player, block)) {
-            event.getCallbacks().cancelAll();
+        	event.setCancelled(true);
         }
     }
 
