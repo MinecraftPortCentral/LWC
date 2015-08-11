@@ -43,9 +43,7 @@
         <!-- Server Mods -->
         <module>mods/sponge</module>
         <module>mods/bukkit</module>
-        <module>mods/canarymod</module>
         <module>mods/forge</module>
-        <module>mods/granite</module>
         <module>mods/universal</module>
     </modules>
 

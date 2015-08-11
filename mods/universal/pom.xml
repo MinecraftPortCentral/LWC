@@ -47,12 +47,6 @@
         </dependency>
         <dependency>
             <groupId>org.getlwc.mods</groupId>
-            <artifactId>canarymod</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.getlwc.mods</groupId>
             <artifactId>sponge</artifactId>
             <version>5.0.0-SNAPSHOT</version>
             <scope>compile</scope>
