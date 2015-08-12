@@ -124,7 +124,7 @@ public abstract class Block {
 
     @Override
     public String toString() {
-        return String.format("Block(name=%s data=%d loc=[%d %d %d \"%s\"])", getName(), getData(), getX(), getY(), getZ(), getWorld().getName());
+        return String.format("Block(name=%s data=%d loc=[%d %d %d \"%s\"])", getType().getId(), getData(), getX(), getY(), getZ(), getWorld().getName());
     }
 
     @Override
@@ -169,7 +169,7 @@ public abstract class Block {
      */
     public boolean isOneOf(String... names) {
         for (String name : names) {
-            if (getName().equals(name)) {
+            if (getType().getId().equals(name)) {
                 return true;
             }
         }
@@ -236,7 +236,7 @@ public abstract class Block {
 
         for (BlockFace face : faces) {
             if ((block = getRelative(face)) != null) {
-                if (typeSet.contains(block.getName())) {
+                if (typeSet.contains(block.getType().getId())) {
                     return block;
                 }
             }

@@ -44,7 +44,7 @@ public class SimpleProtectionMatcher implements ProtectionMatcher {
 
         // Double chest
         if (base.isOneOf("minecraft:chest", "minecraft:trapped_chest")) {
-            Block adjacentChest = base.findBlockRelativeToXZ(base.getName());
+            Block adjacentChest = base.findBlockRelativeToXZ(base.getType().getId());
 
             if (adjacentChest != null) {
                 locations.add(adjacentChest);
