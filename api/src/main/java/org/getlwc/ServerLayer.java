@@ -51,6 +51,18 @@ public abstract class ServerLayer {
     protected final Map<String, World> worlds = new HashMap<>();
 
     /**
+     * A map of all of the currently known worlds
+     */
+    protected final Map<UUID, World> worldsByUniqueId = new HashMap<>();
+
+    /**
+     * Returns whether or not the server layer supports UUID's
+     * 
+     * @return true if UUID is supported, false if not
+     */
+    public abstract boolean isUUIDSupported();
+
+    /**
      * Get the title of the implementation software that runs the server
      *
      * @return
@@ -92,6 +104,13 @@ public abstract class ServerLayer {
      * @param worldName
      */
     protected abstract World internalGetWorld(String worldName);
+
+    /**
+     * Load a world directly from the server without using any caches
+     *
+     * @param uuid
+     */
+    protected abstract World internalGetWorld(UUID uuid);
 
     /**
      * Resolves an offline player for the ident; either a player name or their UUID.
@@ -150,6 +169,26 @@ public abstract class ServerLayer {
 
         if (world != null) {
             worlds.put(worldName, world);
+        }
+
+        return world;
+    }
+
+    /**
+     * Get a world from the server by UUID
+     *
+     * @param uuid
+     * @return
+     */
+    public World getWorld(UUID uuid) {
+        if (worldsByUniqueId.containsKey(uuid)) {
+            return worldsByUniqueId.get(uuid);
+        }
+
+        World world = internalGetWorld(uuid);
+
+        if (world != null) {
+        	worldsByUniqueId.put(uuid, world);
         }
 
         return world;

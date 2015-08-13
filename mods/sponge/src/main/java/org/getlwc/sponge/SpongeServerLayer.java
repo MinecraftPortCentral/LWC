@@ -69,7 +69,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     public World getDefaultWorld() {
-        return getWorld(game.getServer().getWorlds().iterator().next().getName());
+        return getWorld(game.getServer().getWorlds().iterator().next().getUniqueId());
     }
 
     @Override
@@ -95,9 +95,25 @@ public class SpongeServerLayer extends ServerLayer {
     }
 
     @Override
+    protected World internalGetWorld(UUID uuid) {
+        org.spongepowered.api.world.World world = game.getServer().getWorld(uuid).orNull();
+
+        if (world != null) {
+            return new SpongeExtent(world);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public UUID getOfflinePlayer(String ident) {
         // TODO
         return null;
+    }
+
+    @Override
+    public boolean isUUIDSupported() {
+        return true;
     }
 
 }

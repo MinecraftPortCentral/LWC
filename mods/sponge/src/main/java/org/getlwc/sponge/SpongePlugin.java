@@ -61,6 +61,7 @@ import org.spongepowered.api.world.extent.Extent;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Plugin(id = Version.PLUGIN_ID, name = Version.PLUGIN_NAME, version = Version.PLUGIN_VERSION)
 public class SpongePlugin {
@@ -167,6 +168,16 @@ public class SpongePlugin {
      */
     public World getWorld(String worldName) {
         return layer.getWorld(worldName);
+    }
+
+    /**
+     * Get a world by UUID
+     *
+     * @param uuid
+     * @return
+     */
+    public World getWorld(UUID uuid) {
+        return layer.getWorld(uuid);
     }
 
     /**

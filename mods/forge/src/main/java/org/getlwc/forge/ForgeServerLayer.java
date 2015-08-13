@@ -63,13 +63,11 @@ public class ForgeServerLayer extends ServerLayer {
         eventBus.subscribe(this);
     }
 
-    @SuppressWarnings("unused")
     @Listener
     public void onServerStartup(ServerStartingEvent event) {
         init();
     }
 
-    @SuppressWarnings("unused")
     @Listener
     public void onServerStop(ServerStoppingEvent event) {
         clearCache();
@@ -190,6 +188,17 @@ public class ForgeServerLayer extends ServerLayer {
         }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected World internalGetWorld(UUID uuid) {
+        // Not supported
+        return null;
+    }
+
+    @Override
+    public boolean isUUIDSupported() {
+        return false;
     }
 
 }

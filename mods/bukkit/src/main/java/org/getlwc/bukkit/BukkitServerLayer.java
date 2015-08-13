@@ -108,4 +108,14 @@ public class BukkitServerLayer extends ServerLayer {
     public World getDefaultWorld() {
         return getWorld(Bukkit.getWorlds().get(0).getName());
     }
+
+    @Override
+    protected World internalGetWorld(UUID uuid) {
+        return getWorld(Bukkit.getWorlds().get(0).getUID());
+    }
+
+    @Override
+    public boolean isUUIDSupported() {
+        return true;
+    }
 }

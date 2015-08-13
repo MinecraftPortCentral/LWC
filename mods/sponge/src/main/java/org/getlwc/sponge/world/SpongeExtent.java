@@ -44,13 +44,7 @@ public class SpongeExtent implements World {
 
     @Override
     public String getName() {
-        if (handle instanceof org.spongepowered.api.world.World) {
-            org.spongepowered.api.world.World worldHandle = (org.spongepowered.api.world.World) handle;
-
-            return worldHandle.getName();
-        } else {
-            return handle.getClass().getSimpleName();
-        }
+        return handle.getUniqueId().toString();
     }
 
     @Override

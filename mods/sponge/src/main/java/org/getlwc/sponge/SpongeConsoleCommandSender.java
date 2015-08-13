@@ -30,7 +30,6 @@ package org.getlwc.sponge;
 
 import org.getlwc.command.ConsoleCommandSender;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SpongeConsoleCommandSender extends ConsoleCommandSender {
 

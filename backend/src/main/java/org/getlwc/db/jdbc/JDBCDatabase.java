@@ -58,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class JDBCDatabase implements Database {
 
@@ -430,7 +431,12 @@ public class JDBCDatabase implements Database {
 
             try (ResultSet set = statement.executeQuery()) {
                 while (set.next()) {
-                    World world = engine.getServerLayer().getWorld(lookup.get(JDBCLookupService.LookupType.WORLD_NAME, set.getInt("world")));
+                    World world = null;
+                    if (engine.getServerLayer().isUUIDSupported()) {
+                        world = engine.getServerLayer().getWorld(UUID.fromString(lookup.get(JDBCLookupService.LookupType.WORLD_NAME, set.getInt("world"))));
+                    } else {
+                        world = engine.getServerLayer().getWorld(lookup.get(JDBCLookupService.LookupType.WORLD_NAME, set.getInt("world")));
+                    }
                     int x = set.getInt("x");
                     int y = set.getInt("y");
                     int z = set.getInt("z");
