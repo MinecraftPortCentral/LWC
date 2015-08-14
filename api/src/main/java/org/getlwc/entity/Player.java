@@ -34,6 +34,7 @@ import org.getlwc.component.MetadataComponent;
 import org.getlwc.event.EventConsumer;
 import org.getlwc.event.EventFuture;
 import org.getlwc.event.block.BlockInteractEvent;
+import org.getlwc.event.entity.EntityInteractEvent;
 import org.getlwc.event.protection.ProtectionInteractEvent;
 import org.getlwc.lang.Locale;
 
@@ -81,6 +82,14 @@ public abstract class Player extends Entity implements CommandSender {
      * @return
      */
     public abstract EventFuture onNextBlockInteract(EventConsumer<BlockInteractEvent> consumer);
+
+    /**
+     * Calls the given consumer the next time the player interacts with a entity
+     *
+     * @param consumer
+     * @return
+     */
+    public abstract EventFuture onNextEntityInteract(EventConsumer<EntityInteractEvent> consumer);
 
     /**
      * Calls the given consumer every time the player interacts with a protection.

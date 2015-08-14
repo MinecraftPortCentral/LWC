@@ -33,6 +33,7 @@ import org.getlwc.event.CompositeEventFuture;
 import org.getlwc.event.EventConsumer;
 import org.getlwc.event.EventFuture;
 import org.getlwc.event.block.BlockInteractEvent;
+import org.getlwc.event.entity.EntityInteractEvent;
 import org.getlwc.event.protection.ProtectionInteractEvent;
 
 import java.util.ArrayList;
@@ -127,6 +128,34 @@ public abstract class SimplePlayer extends Player {
             @Override
             public void accept(ProtectionInteractEvent event) {
                 sendTranslatedMessage("&4That block is protected. Please interact with one that isn't.");
+                event.markCancelled();
+            }
+        });
+
+        EventFuture future = new CompositeEventFuture(mainFuture, secondaryFuture);
+
+        nextFuture = future;
+        return future;
+    }
+
+    @Override
+    public EventFuture onNextEntityInteract(final EventConsumer<EntityInteractEvent> consumer) {
+        if (nextFuture != null) {
+            nextFuture.cancel();
+        }
+
+        EventFuture mainFuture = SimpleEngine.getInstance().getEventBus().subscribe(EntityInteractEvent.class, new EventConsumer<EntityInteractEvent>() {
+            @Override
+            public void accept(EntityInteractEvent event) {
+                consumer.accept(event);
+                nextFuture.cancel();
+            }
+        });
+
+        EventFuture secondaryFuture = SimpleEngine.getInstance().getEventBus().subscribe(ProtectionInteractEvent.class, new EventConsumer<ProtectionInteractEvent>() {
+            @Override
+            public void accept(ProtectionInteractEvent event) {
+                sendTranslatedMessage("&4That entity is protected. Please interact with one that isn't.");
                 event.markCancelled();
             }
         });

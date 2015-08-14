@@ -65,7 +65,7 @@ public class SpongeEventListener {
         Block block = plugin.wrapBlock(event.getLocation());
 
         if (EventHelper.onBlockInteract(player, block)) {
-        	event.setCancelled(true);
+            event.setCancelled(true);
         }
     }
 

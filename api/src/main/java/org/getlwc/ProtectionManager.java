@@ -28,6 +28,7 @@
  */
 package org.getlwc;
 
+import org.getlwc.entity.Entity;
 import org.getlwc.model.Protection;
 import org.getlwc.role.RoleRegistry;
 
@@ -44,12 +45,28 @@ public interface ProtectionManager {
     public boolean isBlockProtectable(Block block);
 
     /**
+     * Check if the given entity can be protected
+     *
+     * @param entity
+     * @return true if the entity can be protected
+     */
+    public boolean isEntityProtectable(Entity entity);
+
+    /**
      * Find a protection at the given location
      *
      * @param location
      * @return
      */
     public Protection loadProtection(Location location);
+
+    /**
+     * Load protection for given entity
+     *
+     * @param entity
+     * @return
+     */
+    public Protection loadProtection(Entity entity);
 
     /**
      * Create a protection in the world
@@ -59,6 +76,15 @@ public interface ProtectionManager {
      * @return
      */
     public Protection createProtection(UUID owner, Location location);
+
+    /**
+     * Create a protection for entity in the world
+     *
+     * @param owner
+     * @param target
+     * @return
+     */
+    public Protection createProtection(UUID owner, Entity target);
 
     /**
      * Get the registry for roles

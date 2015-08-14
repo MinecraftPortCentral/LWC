@@ -31,6 +31,7 @@ package org.getlwc.bukkit.entity;
 import org.getlwc.Location;
 import org.getlwc.bukkit.BukkitPlugin;
 import org.getlwc.entity.Entity;
+import org.getlwc.entity.EntityType;
 
 import java.util.UUID;
 
@@ -71,4 +72,9 @@ public class BukkitEntity extends Entity {
         return new Location(plugin.getWorld(lhandle.getWorld().getName()), lhandle.getX(), lhandle.getY(), lhandle.getZ());
     }
 
+    @Override
+    public EntityType getType() {
+        // TODO
+        return null;
+    }
 }

@@ -29,6 +29,7 @@
 package org.getlwc.db;
 
 import org.getlwc.Location;
+import org.getlwc.entity.Entity;
 import org.getlwc.meta.Meta;
 import org.getlwc.model.Protection;
 
@@ -49,6 +50,13 @@ public interface ProtectionDatabase {
      * @return
      */
     public Protection loadProtection(Location location);
+
+    /**
+     * Load a protection from the database for the given entity
+     *
+     * @return
+     */
+    public Protection loadProtection(Entity entity);
 
     /**
      * Load a protection from the database for the given id

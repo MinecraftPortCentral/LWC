@@ -32,6 +32,7 @@ import org.getlwc.entity.Entity;
 import org.getlwc.entity.Player;
 import org.getlwc.event.Event;
 import org.getlwc.event.block.BlockInteractEvent;
+import org.getlwc.event.entity.EntityInteractEvent;
 import org.getlwc.event.protection.ProtectionInteractEvent;
 import org.getlwc.lang.Locale;
 import org.getlwc.lang.MessageStore;
@@ -62,6 +63,36 @@ public class EventHelper {
      */
     private static boolean silentAccessCheck(Entity entity, Block block) {
         Protection protection = engine.getProtectionManager().loadProtection(block.getLocation());
+
+        if (protection == null) {
+            return true;
+        }
+
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+
+            Protection.Access access = protection.getAccess(player);
+
+            if (access.ordinal() > Protection.Access.NONE.ordinal()) {
+                return true;
+            }
+
+            return false;
+        } else {
+            // throw new UnsupportedOperationException("Unsupported Entity: " + entity.getClass().getSimpleName());
+            return false;
+        }
+    }
+
+    /**
+     * A generic method that checks if an entity is allowed to interact with the given entity.
+     *
+     * @param entity
+     * @param targetEntity
+     * @return true if the given entity can access the entity (i.e. no protection there OR they can access the protection)
+     */
+    private static boolean silentAccessCheck(Entity entity, Entity targetEntity) {
+        Protection protection = engine.getProtectionManager().loadProtection(targetEntity);
 
         if (protection == null) {
             return true;
@@ -137,8 +168,59 @@ public class EventHelper {
      * @return
      */
     public static boolean onEntityInteract(Entity entity, Entity target) {
-        //
-        return false;
+        boolean cancel;
+
+        // Match the entity to a protection
+        Protection protection = engine.getProtectionManager().loadProtection(target);
+        engine.getConsoleSender().sendMessage("Protection found: " + protection);
+
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+
+            try {
+                Event event;
+
+                if (protection == null) {
+                    event = new EntityInteractEvent(target);
+                } else {
+                    event = new ProtectionInteractEvent(protection);
+                }
+
+                engine.getEventBus().post(event);
+                cancel = event.isCancelled();
+
+                // default event action
+                if (!cancel && protection != null) {
+                    Protection.Access access = protection.getAccess(player);
+
+                    /// TODO distinguish between left / right click.
+
+                    // check if they can access the protection
+                    if (access.ordinal() > Protection.Access.NONE.ordinal()) {
+                        return false;
+                    }
+
+                    // they cannot access the protection o\
+                    // so send them a kind message
+                    if (access != Protection.Access.EXPLICIT_DENY) {
+                        player.sendTranslatedMessage("&4This entity is protected by a magical spell.");
+                    }
+
+                    return true;
+                }
+            } catch (Exception e) {
+                /// {0}: message from the exception/error that was thrown
+                player.sendTranslatedMessage("&cA severe error occurred while processing the event: {0}\n"
+                        + "&cThe stack trace has been printed out to the console.", e.getMessage());
+                e.printStackTrace();
+                return true; // Better safe than sorry
+            }
+        } else {
+            // throw new UnsupportedOperationException("Unsupported Entity: " + (entity != null ? entity.getClass().getSimpleName() : "null"));
+            cancel = !silentAccessCheck(entity, target);
+        }
+
+        return cancel;
     }
 
     /**

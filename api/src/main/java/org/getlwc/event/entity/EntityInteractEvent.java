@@ -26,51 +26,14 @@
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
-package org.getlwc.forge.entity;
+package org.getlwc.event.entity;
 
-import org.getlwc.Location;
 import org.getlwc.entity.Entity;
-import org.getlwc.entity.EntityType;
-import org.getlwc.forge.world.ForgeWorld;
 
-import java.util.UUID;
+public class EntityInteractEvent extends EntityEvent {
 
-public class ForgeEntity extends Entity {
-
-    /**
-     * The entity handle
-     */
-    private net.minecraft.entity.Entity handle;
-
-    public ForgeEntity(net.minecraft.entity.Entity handle) {
-        this.handle = handle;
-    }
-
-    @Override
-    public UUID getUUID() {
-        return handle.getPersistentID();
-    }
-
-    @Override
-    public String getName() {
-        return handle.getCommandSenderName();
-    }
-
-    @Override
-    public Location getLocation() {
-        try {
-            return new Location(new ForgeWorld(handle.worldObj), (int) handle.posX, (int) handle.posY, (int) handle.posZ);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public EntityType getType() {
-        // TODO
-        return null;
+    public EntityInteractEvent(Entity entity) {
+        super(entity);
     }
 
 }

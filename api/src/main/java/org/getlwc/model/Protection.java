@@ -35,6 +35,7 @@ import org.getlwc.component.Component;
 import org.getlwc.component.LocationSetComponent;
 import org.getlwc.component.MetadataComponent;
 import org.getlwc.component.RoleSetComponent;
+import org.getlwc.component.UUIDSetComponent;
 import org.getlwc.entity.Player;
 import org.getlwc.event.protection.ProtectionLoadEvent;
 import org.getlwc.meta.Meta;
@@ -43,6 +44,7 @@ import org.getlwc.meta.TemporaryMeta;
 import org.getlwc.role.Role;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 public class Protection extends BasicComponentHolder<Component> implements Savable {
 
@@ -262,6 +264,7 @@ public class Protection extends BasicComponentHolder<Component> implements Savab
 
         saveMetadata();
         saveLocations();
+        saveEntities();
         saveRoles();
     }
 
@@ -312,6 +315,25 @@ public class Protection extends BasicComponentHolder<Component> implements Savab
     }
 
     /**
+     * Save the protected entities for the protection
+     */
+    private void saveEntities() {
+        UUIDSetComponent uuids = getComponent(UUIDSetComponent.class);
+
+        if (uuids != null) {
+            for (UUID uuid : uuids.getObjectsRemoved()) {
+                engine.getDatabase().removeProtectionEntity(this, uuid);
+            }
+
+            for (UUID uuid : uuids.getObjectsAdded()) {
+                engine.getDatabase().addProtectionEntity(this, uuid);
+            }
+
+            uuids.resetObservedState();
+        }
+    }
+
+    /**
      * Save the roles for this protection
      */
     private void saveRoles() {
@@ -344,6 +366,7 @@ public class Protection extends BasicComponentHolder<Component> implements Savab
     public void remove() {
         engine.getDatabase().removeAllProtectionRoles(this);
         engine.getDatabase().removeAllProtectionLocations(this);
+        engine.getDatabase().removeAllProtectionEntities(this);
         engine.getDatabase().removeAllProtectionMetadata(this);
         engine.getDatabase().removeProtection(this);
         state = State.REMOVED;

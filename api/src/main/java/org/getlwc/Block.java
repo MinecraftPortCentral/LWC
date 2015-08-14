@@ -124,7 +124,7 @@ public abstract class Block {
 
     @Override
     public String toString() {
-        return String.format("Block(name=%s data=%d loc=[%d %d %d \"%s\"])", getType().getId(), getData(), getX(), getY(), getZ(), getWorld().getName());
+        return String.format("Block(name=%s data=%d loc=[%d %d %d \"%s\"])", getType() == null ? "unknown_type" : getType().getId(), getData(), getX(), getY(), getZ(), getWorld() == null ? "unknown_world" : getWorld().getName());
     }
 
     @Override
@@ -148,8 +148,7 @@ public abstract class Block {
      */
     @Deprecated
     public String getName() {
-        BlockType type = getType();
-        return type == null ? "unknown" : type.getName();
+        return getType() == null ? "unknown" : getType().getName();
     }
 
     /**

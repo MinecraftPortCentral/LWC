@@ -63,7 +63,12 @@ public class JDBCLookupService {
         /**
          * A world's uuid or name
          */
-        WORLD_NAME("world_name");
+        WORLD_NAME("world_name"),
+
+        /**
+         * An entity's uuid
+         */
+        ENTITY_UUID("entity_uuid");
 
         String suffix;
 

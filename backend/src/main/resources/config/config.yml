@@ -9,10 +9,13 @@ core:
     locale: en_US
 
 protections:
-    protectables:
+    blocks:
         minecraft:chest:
             enabled: true
         minecraft:furnace:
+            enabled: true
+    entities:
+        minecraft:entityhorse:
             enabled: true
 
 notifications:

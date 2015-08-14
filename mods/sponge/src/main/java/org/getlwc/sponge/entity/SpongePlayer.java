@@ -32,8 +32,8 @@ import com.flowpowered.math.vector.Vector3d;
 
 import org.getlwc.ItemStack;
 import org.getlwc.Location;
+import org.getlwc.entity.EntityType;
 import org.getlwc.entity.SimplePlayer;
-import org.getlwc.lang.Locale;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.getlwc.util.Color;
 import org.spongepowered.api.text.Texts;
@@ -46,9 +46,11 @@ public class SpongePlayer extends SimplePlayer {
      * native Sponge handle
      */
     private org.spongepowered.api.entity.player.Player handle;
+    private EntityType type;
 
     public SpongePlayer(org.spongepowered.api.entity.player.Player handle) {
         this.handle = handle;
+        this.type = new SpongeEntityType(handle.getType());
     }
 
     @Override
@@ -85,4 +87,10 @@ public class SpongePlayer extends SimplePlayer {
     public boolean hasPermission(String node) {
         return handle.hasPermission(node);
     }
+
+    @Override
+    public EntityType getType() {
+        return this.type;
+    }
+
 }

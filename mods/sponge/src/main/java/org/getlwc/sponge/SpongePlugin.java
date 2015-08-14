@@ -80,7 +80,6 @@ public class SpongePlugin {
     @ConfigDir(sharedRoot = false)
     private File configDir;
 
-    @SuppressWarnings("unused")
     @Subscribe
     public void onStartup(ServerStartingEvent event) {
         if (instance != null) {
@@ -100,7 +99,6 @@ public class SpongePlugin {
         game.getEventManager().register(this, new SpongeEventListener(this));
     }
 
-    @SuppressWarnings("unused")
     @Subscribe
     public void onShutdown(ServerStoppingEvent event) {
         engine.getEventBus().post(new org.getlwc.event.server.ServerStoppingEvent());

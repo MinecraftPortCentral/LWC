@@ -30,10 +30,12 @@ package org.getlwc;
 
 import org.getlwc.component.LocationSetComponent;
 import org.getlwc.component.RoleSetComponent;
+import org.getlwc.component.UUIDSetComponent;
 import org.getlwc.configuration.Configuration;
 import org.getlwc.configuration.YamlConfiguration;
 import org.getlwc.content.role.PlayerRole;
 import org.getlwc.content.role.PlayerRoleFactory;
+import org.getlwc.entity.Entity;
 import org.getlwc.model.Protection;
 import org.getlwc.role.RoleCreationException;
 import org.getlwc.role.RoleRegistry;
@@ -68,13 +70,24 @@ public class SimpleProtectionManager implements ProtectionManager {
 
     @Override
     public boolean isBlockProtectable(Block block) {
-        String enabled = getProtectionConfiguration("enabled", block.getType().getName(), block.getType().getId());
+        String enabled = getProtectionConfiguration("enabled", block, block.getType().getName(), block.getType().getId());
+        return enabled.equalsIgnoreCase("true") || enabled.equalsIgnoreCase("yes");
+    }
+
+    @Override
+    public boolean isEntityProtectable(Entity entity) {
+        String enabled = getProtectionConfiguration("enabled", entity, entity.getType().getName(), entity.getType().getId());
         return enabled.equalsIgnoreCase("true") || enabled.equalsIgnoreCase("yes");
     }
 
     @Override
     public Protection loadProtection(Location location) {
         return engine.getDatabase().loadProtection(location);
+    }
+
+    @Override
+    public Protection loadProtection(Entity entity) {
+        return engine.getDatabase().loadProtection(entity);
     }
 
     @Override
@@ -105,6 +118,35 @@ public class SimpleProtectionManager implements ProtectionManager {
             protection.getComponent(RoleSetComponent.class).add(role);
         } catch (RoleCreationException e) {
             System.out.println("Failed to attach owner to protection: " + e.getMessage());
+            protection.remove();
+            return null;
+        }
+
+        protection.save();
+
+        return protection;
+    }
+
+    @Override
+    public Protection createProtection(UUID owner, Entity target) {
+        // First create the protection
+        Protection protection = engine.getDatabase().createProtection();
+
+        // ensure it was created
+        if (protection == null) {
+            return null;
+        }
+
+        UUIDSetComponent component = new UUIDSetComponent();
+        component.add(target.getUUID());
+        protection.addComponent(component);
+        // add the Owner role to the database for the player
+        try {
+            PlayerRole role = roleRegistry.loadRole(PlayerRole.TYPE, owner.toString());
+            role.setAccess(Protection.Access.OWNER);
+
+            protection.getComponent(RoleSetComponent.class).add(role);
+        } catch (RoleCreationException e) {
             protection.remove();
             return null;
         }
@@ -146,16 +188,17 @@ public class SimpleProtectionManager implements ProtectionManager {
      * @param match a list of strings that can be matched. e.g [ chest, 54 ] -> will match protections.protectables.chest and protections.protectables.54
      * @return
      */
-    private String getProtectionConfiguration(String node, String... match) {
+    private String getProtectionConfiguration(String node, Object type, String... match) {
         YamlConfiguration configuration = engine.getConfiguration();
 
         String value = null;
+        String protectionNode = type instanceof Block ? "protections.blocks" : "protections.entities";
 
         // try highest nodes first
         for (String m : match) {
             // period (.) in the match name is a special case
             if (m.contains(".")) {
-                Map<String, Object> map = (Map<String, Object>) configuration.get("protections.protectables");
+                Map<String, Object> map = (Map<String, Object>) configuration.get(protectionNode);
 
                 if (map.containsKey(m)) {
                     Map<String, Object> sub = (Map<String, Object>) map.get(m);
@@ -165,7 +208,7 @@ public class SimpleProtectionManager implements ProtectionManager {
                     }
                 }
             } else {
-                value = configuration.getString("protections.protectables." + m + "." + node, null);
+                value = configuration.getString(protectionNode + "." + m + "." + node, null);
             }
 
             if (value != null) {

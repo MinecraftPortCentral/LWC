@@ -34,7 +34,6 @@ import com.google.inject.Scopes;
 import org.getlwc.ServerLayer;
 import org.getlwc.command.ConsoleCommandSender;
 import org.getlwc.util.registry.MinecraftRegistry;
-import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 
 import javax.inject.Inject;

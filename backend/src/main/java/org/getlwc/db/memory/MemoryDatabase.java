@@ -31,8 +31,10 @@ package org.getlwc.db.memory;
 import org.getlwc.Engine;
 import org.getlwc.Location;
 import org.getlwc.component.LocationSetComponent;
+import org.getlwc.component.UUIDSetComponent;
 import org.getlwc.db.Database;
 import org.getlwc.db.DatabaseException;
+import org.getlwc.entity.Entity;
 import org.getlwc.meta.Meta;
 import org.getlwc.model.Protection;
 import org.getlwc.model.Savable;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton
@@ -67,6 +70,11 @@ public class MemoryDatabase implements Database {
      * Protections indexed by their location
      */
     private Map<Location, Protection> protectionsIndexByLocation = new HashMap<>();
+
+    /**
+     * Protections indexed by their uuid
+     */
+    private Map<UUID, Protection> protectionsIndexByUniqueId = new HashMap<>();
 
     /**
      * The protection auto increment ID
@@ -213,4 +221,29 @@ public class MemoryDatabase implements Database {
             }
         }
     }
+
+    @Override
+    public Protection loadProtection(Entity entity) {
+        return protectionsIndexByUniqueId.get(entity.getUUID());
+    }
+
+    @Override
+    public void addProtectionEntity(Protection protection, UUID uuid) {
+        protectionsIndexByUniqueId.put(uuid, protection);
+    }
+
+    @Override
+    public void removeProtectionEntity(Protection protection, UUID uuid) {
+        protectionsIndexByUniqueId.remove(uuid);
+    }
+
+    @Override
+    public void removeAllProtectionEntities(Protection protection) {
+        if (protection.hasComponent(UUIDSetComponent.class)) {
+            for (UUID uuid : protection.getComponent(UUIDSetComponent.class).getAll()) {
+                removeProtectionEntity(protection, uuid);
+            }
+        }
+    }
+
 }

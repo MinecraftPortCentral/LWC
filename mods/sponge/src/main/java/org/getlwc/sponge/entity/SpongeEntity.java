@@ -29,8 +29,10 @@
 package org.getlwc.sponge.entity;
 
 import com.flowpowered.math.vector.Vector3d;
+
 import org.getlwc.Location;
 import org.getlwc.entity.Entity;
+import org.getlwc.entity.EntityType;
 import org.getlwc.sponge.world.SpongeExtent;
 
 import java.util.UUID;
@@ -41,9 +43,11 @@ public class SpongeEntity extends Entity {
      * native Sponge handle
      */
     private org.spongepowered.api.entity.Entity handle;
+    private EntityType type;
 
     public SpongeEntity(org.spongepowered.api.entity.Entity handle) {
         this.handle = handle;
+        this.type = new SpongeEntityType(handle.getType());
     }
 
     @Override
@@ -63,6 +67,11 @@ public class SpongeEntity extends Entity {
         Vector3d locHandle = handle.getLocation().getPosition();
         return new Location(new SpongeExtent(handle.getWorld()), locHandle.getX(), locHandle.getY(), locHandle.getZ());
 
+    }
+
+    @Override
+    public EntityType getType() {
+        return this.type;
     }
 
 }

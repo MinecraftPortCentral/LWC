@@ -26,75 +26,26 @@
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
-package org.getlwc.forge.entity;
+package org.getlwc.sponge.entity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-
-import org.getlwc.ItemStack;
-import org.getlwc.Location;
 import org.getlwc.entity.EntityType;
-import org.getlwc.entity.SimplePlayer;
-import org.getlwc.forge.ForgeMod;
-import org.getlwc.forge.world.ForgeWorld;
-import org.getlwc.util.Color;
 
-import java.util.UUID;
+public class SpongeEntityType extends EntityType {
 
-public class ForgePlayer extends SimplePlayer {
+    private org.spongepowered.api.entity.EntityType handle;
 
-    private ForgeMod mod;
-
-    /**
-     * native Forge handle
-     */
-    private EntityPlayer handle;
-
-    public ForgePlayer(EntityPlayer handle) {
-        this.handle = handle;
-        this.mod = ForgeMod.instance;
+    public SpongeEntityType(org.spongepowered.api.entity.EntityType type) {
+        this.handle = type;
     }
 
     @Override
-    public UUID getUUID() {
-        return handle.getPersistentID();
+    public String getId() {
+        return this.handle.getId();
     }
 
     @Override
     public String getName() {
-        return handle.getCommandSenderName();
+        return this.handle.getName();
     }
 
-    @Override
-    public Location getLocation() {
-        try {
-            return new Location(new ForgeWorld(handle.worldObj), (int) handle.posX, (int) handle.posY, (int) handle.posZ);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        for (String line : message.split("\n")) {
-            handle.addChatComponentMessage(new ChatComponentText(Color.replaceColors(line)));
-        }
-    }
-
-    @Override
-    public ItemStack getItemInHand() {
-        return mod.castItemStack(handle.getHeldItem());
-    }
-
-    public EntityPlayer getHandle() {
-        return handle;
-    }
-
-    @Override
-    public EntityType getType() {
-        // TODO
-        return null;
-    }
 }

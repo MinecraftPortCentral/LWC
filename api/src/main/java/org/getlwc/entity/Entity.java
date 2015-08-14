@@ -29,6 +29,7 @@
 package org.getlwc.entity;
 
 import org.getlwc.Location;
+import org.getlwc.World;
 import org.getlwc.component.BasicComponentHolder;
 import org.getlwc.component.Component;
 
@@ -37,24 +38,63 @@ import java.util.UUID;
 public abstract class Entity extends BasicComponentHolder<Component> {
 
     /**
-     * Get the UUID of the entity
+     * Gets the entity's type
      *
-     * @return
+     * @return Entity type.
      */
+    public abstract EntityType getType();
+
+    /**
+     * Get the UUID of this entity
+     *
+     * @return uuid
+     */ 
     public abstract UUID getUUID();
 
-    /**
-     * Get the entity's name
-     *
-     * @return
-     */
-    public abstract String getName();
+    public abstract Location getLocation();
+
+    @Override
+    public String toString() {
+        return String.format("Entity(name=%s loc=[%d %d %d \"%s\"])", getType() == null ? "unknown_type" : getType().getId(), getLocation().getBlockX(), getLocation().getBlockY(), getLocation().getBlockZ(), getLocation().getWorld() == null ? "unknown_world" : getLocation().getWorld().getName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Entity)) return false;
+        Entity other = (Entity) o;
+
+        return getUUID().equals(other.getUUID());
+    }
+
+    @Override
+    public int hashCode() {
+    	return getUUID().hashCode();
+    }
 
     /**
-     * Get the player's current location
+     * Get the entity's name.
      *
+     * @return the entity's name. If the entity is unknown, "unknown" is returned
+     */
+    public String getName() {
+        return getType() == null ? "unknown" : getType().getName();
+    }
+
+	/**
+     * Check if the entity matches one of the provided types
+     *
+     * @param names
      * @return
      */
-    public abstract Location getLocation();
+    public boolean isOneOf(String... names) {
+        for (String name : names) {
+            if (getType().getId().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

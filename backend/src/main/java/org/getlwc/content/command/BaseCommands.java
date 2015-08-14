@@ -37,9 +37,11 @@ import org.getlwc.command.CommandContext;
 import org.getlwc.command.SenderType;
 import org.getlwc.component.Component;
 import org.getlwc.component.RoleSetComponent;
+import org.getlwc.entity.Entity;
 import org.getlwc.entity.Player;
 import org.getlwc.event.EventConsumer;
 import org.getlwc.event.block.BlockInteractEvent;
+import org.getlwc.event.entity.EntityInteractEvent;
 import org.getlwc.event.protection.ProtectionInteractEvent;
 import org.getlwc.model.Protection;
 import org.getlwc.role.Role;
@@ -128,11 +130,48 @@ public class BaseCommands {
                 Protection protection = manager.createProtection(player.getUUID(), block.getLocation());
 
                 if (protection != null) {
-                    player.sendTranslatedMessage("&2Created a new protection successfully.\n" +
-                            "Want to give another player access to your protection?\n" +
+                    player.sendTranslatedMessage("&2Created a new block protection successfully.\n" +
+                            "Want to give another player access to your block protection?\n" +
                             "Use: &e/lwc modify NAME (or: /cadd NAME)");
                 } else {
                     player.sendTranslatedMessage("&4Failed to create the protection. Your block is most likely not protected.");
+                }
+            }
+        });
+    }
+
+    @Command(
+            command = "lwc create entity",
+            description = "Create a protection",
+            permission = "lwc.create.entity",
+            aliases = {"cprivatee", "protecte", "pe"},
+            accepts = SenderType.PLAYER
+    )
+    public void createEntityProtection(CommandContext context) {
+        final Player player = (Player) context.getCommandSender();
+        player.sendTranslatedMessage("&eClick on an entity to protect it!");
+
+        player.onNextEntityInteract(new EventConsumer<EntityInteractEvent>() {
+            @Override
+            public void accept(EntityInteractEvent event) {
+                event.markCancelled();
+
+                ProtectionManager manager = engine.getProtectionManager();
+                Entity entity = event.getEntity();
+
+                if (!manager.isEntityProtectable(entity)) {
+                    player.sendTranslatedMessage("&4That entity is not protectable");
+                    return;
+                }
+
+                Protection protection = manager.createProtection(player.getUUID(), entity);
+
+                if (protection != null) {
+                    player.sendTranslatedMessage("&2Created a new entity protection successfully.\n" +
+                            "Want to give another player access to your entity protection?\n" +
+                            "Use: &e/lwc modify NAME (or: /cadd NAME)");
+                } else {
+                    player.sendTranslatedMessage("&4Failed to create the protection. Your entity is most likely not protected.");
                 }
             }
         });

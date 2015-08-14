@@ -27,3 +27,8 @@ CREATE TABLE ${prefix}lookup_world_name (
   id INTEGER NOT NULL PRIMARY KEY,
   name varchar(255) NOT NULL
 );
+
+CREATE TABLE ${prefix}lookup_entity_uuid (
+  id INTEGER NOT NULL PRIMARY KEY,
+  uuid varchar(255) NOT NULL
+);

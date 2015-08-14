@@ -38,6 +38,7 @@ import org.getlwc.World;
 import org.getlwc.component.LocationSetComponent;
 import org.getlwc.db.Database;
 import org.getlwc.db.DatabaseException;
+import org.getlwc.entity.Entity;
 import org.getlwc.meta.Meta;
 import org.getlwc.meta.MetaKey;
 import org.getlwc.model.Protection;
@@ -270,13 +271,14 @@ public class JDBCDatabase implements Database {
      */
     public List<Tuple<String, Integer>> getLookupAssociations(JDBCLookupService.LookupType type) {
         List<Tuple<String, Integer>> result = new ArrayList<>();
+        String colName = type == JDBCLookupService.LookupType.ENTITY_UUID ? "uuid" : "name";
 
         try (Connection connection = pool.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT id, name FROM " + details.getPrefix() + "lookup_" + type.getSuffix());
+             PreparedStatement statement = connection.prepareStatement("SELECT id, " + colName + " FROM " + details.getPrefix() + "lookup_" + type.getSuffix());
              ResultSet set = statement.executeQuery()) {
 
             while (set.next()) {
-                result.add(new Tuple<>(set.getString("name"), set.getInt("id")));
+                result.add(new Tuple<>(set.getString(colName), set.getInt("id")));
             }
         } catch (SQLException e) {
             handleException(e);
@@ -292,8 +294,10 @@ public class JDBCDatabase implements Database {
      * @return
      */
     public int createLookup(JDBCLookupService.LookupType type, String name) {
+        String colName = type == JDBCLookupService.LookupType.ENTITY_UUID ? "uuid" : "name";
+
         try (Connection connection = pool.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO " + details.getPrefix() + "lookup_" + type.getSuffix() + " (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO " + details.getPrefix() + "lookup_" + type.getSuffix() + " (" + colName + ") VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, name);
             statement.executeUpdate();
 
@@ -346,6 +350,24 @@ public class JDBCDatabase implements Database {
             statement.setInt(2, location.getBlockY());
             statement.setInt(3, location.getBlockZ());
             statement.setInt(4, lookup.get(JDBCLookupService.LookupType.WORLD_NAME, location.getWorld().getName()));
+
+            try (ResultSet set = statement.executeQuery()) {
+                if (set.next()) {
+                    return loadProtection(set.getInt("protection_id"));
+                }
+            }
+        } catch (SQLException e) {
+            handleException(e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Protection loadProtection(Entity entity) {
+        try (Connection connection = pool.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT protection_id FROM " + details.getPrefix() + "protection_entities WHERE uuid = ?")) {
+            statement.setInt(1, lookup.get(JDBCLookupService.LookupType.ENTITY_UUID, entity.getUUID().toString()));
 
             try (ResultSet set = statement.executeQuery()) {
                 if (set.next()) {
@@ -486,6 +508,41 @@ public class JDBCDatabase implements Database {
     public void removeAllProtectionLocations(Protection protection) {
         try (Connection connection = pool.getConnection();
              PreparedStatement statement = connection.prepareStatement("DELETE FROM " + details.getPrefix() + "protection_blocks WHERE protection_id = ?")) {
+            statement.setInt(1, protection.getId());
+            statement.execute();
+        } catch (SQLException e) {
+            handleException(e);
+        }
+    }
+
+    @Override
+    public void addProtectionEntity(Protection protection, UUID uuid) {
+        try (Connection connection = pool.getConnection();
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO " + details.getPrefix() + "protection_entities (protection_id, uuid) VALUES (?, ?)")) {
+            statement.setInt(1, protection.getId());
+            statement.setInt(2, lookup.get(JDBCLookupService.LookupType.ENTITY_UUID, uuid.toString()));
+            statement.execute();
+        } catch (SQLException e) {
+            handleException(e);
+        }
+    }
+
+	@Override
+	public void removeProtectionEntity(Protection protection, UUID uuid) {
+        try (Connection connection = pool.getConnection();
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM " + details.getPrefix() + "protection_entities WHERE protection_id = ? AND entity = ?")) {
+               statement.setInt(1, protection.getId());
+               statement.setInt(2, lookup.get(JDBCLookupService.LookupType.ENTITY_UUID, uuid.toString()));
+               statement.execute();
+           } catch (SQLException e) {
+               handleException(e);
+           }
+	}
+
+    @Override
+    public void removeAllProtectionEntities(Protection protection) {
+        try (Connection connection = pool.getConnection();
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM " + details.getPrefix() + "protection_entities WHERE protection_id = ?")) {
             statement.setInt(1, protection.getId());
             statement.execute();
         } catch (SQLException e) {

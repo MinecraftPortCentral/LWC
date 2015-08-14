@@ -39,7 +39,6 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

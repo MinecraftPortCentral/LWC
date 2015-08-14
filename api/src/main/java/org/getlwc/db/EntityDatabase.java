@@ -26,75 +26,38 @@
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
-package org.getlwc.forge.entity;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-
-import org.getlwc.ItemStack;
-import org.getlwc.Location;
-import org.getlwc.entity.EntityType;
-import org.getlwc.entity.SimplePlayer;
-import org.getlwc.forge.ForgeMod;
-import org.getlwc.forge.world.ForgeWorld;
-import org.getlwc.util.Color;
+package org.getlwc.db;
 
 import java.util.UUID;
 
-public class ForgePlayer extends SimplePlayer {
+import org.getlwc.model.Protection;
 
-    private ForgeMod mod;
+/**
+ * Stores protected entities by UUID
+ */
+public interface EntityDatabase {
 
     /**
-     * native Forge handle
+     * Adds an entity to the given protection
+     *
+     * @param protection
+     * @param uuid
      */
-    private EntityPlayer handle;
+    public void addProtectionEntity(Protection protection, UUID uuid);
 
-    public ForgePlayer(EntityPlayer handle) {
-        this.handle = handle;
-        this.mod = ForgeMod.instance;
-    }
+    /**
+     * Removes an entity from the given protection
+     *
+     * @param protection
+     * @param uuid
+     */
+    public void removeProtectionEntity(Protection protection, UUID uuid);
 
-    @Override
-    public UUID getUUID() {
-        return handle.getPersistentID();
-    }
+    /**
+     * Removes all entities from a given protection
+     *
+     * @param protection
+     */
+    public void removeAllProtectionEntities(Protection protection);
 
-    @Override
-    public String getName() {
-        return handle.getCommandSenderName();
-    }
-
-    @Override
-    public Location getLocation() {
-        try {
-            return new Location(new ForgeWorld(handle.worldObj), (int) handle.posX, (int) handle.posY, (int) handle.posZ);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        for (String line : message.split("\n")) {
-            handle.addChatComponentMessage(new ChatComponentText(Color.replaceColors(line)));
-        }
-    }
-
-    @Override
-    public ItemStack getItemInHand() {
-        return mod.castItemStack(handle.getHeldItem());
-    }
-
-    public EntityPlayer getHandle() {
-        return handle;
-    }
-
-    @Override
-    public EntityType getType() {
-        // TODO
-        return null;
-    }
 }

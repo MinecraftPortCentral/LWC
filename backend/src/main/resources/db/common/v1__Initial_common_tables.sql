@@ -32,3 +32,10 @@ CREATE TABLE ${prefix}protection_blocks (
 ) ;
 CREATE INDEX ${prefix}blocks_id ON ${prefix}protection_blocks (protection_id);
 CREATE UNIQUE INDEX ${prefix}blocks on ${prefix}protection_blocks (world, x, y, z);
+
+CREATE TABLE ${prefix}protection_entities (
+  protection_id INTEGER NOT NULL,
+  uuid INTEGER NOT NULL
+) ;
+CREATE INDEX ${prefix}entities_id ON ${prefix}protection_entities (protection_id);
+CREATE UNIQUE INDEX ${prefix}entities on ${prefix}protection_entities (uuid);

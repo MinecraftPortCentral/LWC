@@ -32,6 +32,7 @@ import org.getlwc.Engine;
 import org.getlwc.ItemStack;
 import org.getlwc.Location;
 import org.getlwc.bukkit.BukkitPlugin;
+import org.getlwc.entity.EntityType;
 import org.getlwc.entity.SimplePlayer;
 import org.getlwc.lang.Locale;
 import org.getlwc.util.Color;
@@ -107,5 +108,10 @@ public class BukkitPlayer extends SimplePlayer {
     @Override
     public ItemStack getItemInHand() {
         return plugin.castItemStack(handle.getItemInHand());
+    }
+
+    @Override
+    public EntityType getType() {
+        return null;
     }
 }
