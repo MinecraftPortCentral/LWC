@@ -31,7 +31,7 @@ package org.getlwc.sponge;
 import org.getlwc.BlockType;
 import org.getlwc.ItemType;
 import org.getlwc.util.registry.AbstractMinecraftRegistry;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -39,16 +39,13 @@ import javax.inject.Singleton;
 @Singleton
 public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
-    private Game game;
-
     @Inject
-    public SpongeMinecraftRegistry(Game game) {
-        this.game = game;
+    public SpongeMinecraftRegistry() {
     }
 
     @Override
     protected BlockType internalGetBlockType(String id) {
-        final org.spongepowered.api.block.BlockType type = game.getRegistry().getType(org.spongepowered.api.block.BlockType.class, id).orNull();
+        final org.spongepowered.api.block.BlockType type = Sponge.getRegistry().getType(org.spongepowered.api.block.BlockType.class, id).orElse(null);
 
         if (type == null) {
             return null;
@@ -74,7 +71,7 @@ public class SpongeMinecraftRegistry extends AbstractMinecraftRegistry {
 
     @Override
     protected ItemType internalGetItemType(String id) {
-        final org.spongepowered.api.item.ItemType type = game.getRegistry().getType(org.spongepowered.api.item.ItemType.class, id).orNull();
+        final org.spongepowered.api.item.ItemType type = Sponge.getRegistry().getType(org.spongepowered.api.item.ItemType.class, id).orElse(null);
 
         if (type == null) {
             return null;

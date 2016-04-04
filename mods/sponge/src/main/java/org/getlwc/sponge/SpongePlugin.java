@@ -49,12 +49,12 @@ import org.getlwc.sponge.permission.SpongePermissionHandler;
 import org.getlwc.sponge.world.SpongeBlock;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.ServerStartingEvent;
-import org.spongepowered.api.event.state.ServerStoppingEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.extent.Extent;
@@ -71,36 +71,33 @@ public class SpongePlugin {
     private ServerLayer layer;
 
     @Inject
-    private Game game;
-
-    @Inject
     private Logger logger;
 
     @Inject
     @ConfigDir(sharedRoot = false)
     private File configDir;
 
-    @Subscribe
-    public void onStartup(ServerStartingEvent event) {
+    @Listener
+    public void onStartup(GameStartingServerEvent event) {
         if (instance != null) {
             throw new RuntimeException("LWC cannot be enabled more than once per server!");
         }
 
         instance = this;
 
-        Injector injector = Guice.createInjector(Modules.override(new EngineGuiceModule()).with(new SpongeEngineGuiceModule(this, game)));
+        Injector injector = Guice.createInjector(Modules.override(new EngineGuiceModule()).with(new SpongeEngineGuiceModule(this, Sponge.getGame())));
         engine = injector.getInstance(Engine.class);
         layer = injector.getInstance(ServerLayer.class);
 
-        engine.setPermissionHandler(new SpongePermissionHandler(game.getServiceManager().potentiallyProvide(PermissionService.class)));
+        engine.setPermissionHandler(new SpongePermissionHandler(Sponge.getServiceManager().provide(PermissionService.class).get()));
         engine.getEventBus().subscribe(new EngineEventListener(this));
         engine.getEventBus().post(new org.getlwc.event.server.ServerStartingEvent());
 
-        game.getEventManager().register(this, new SpongeEventListener(this));
+        Sponge.getEventManager().registerListeners(this, new SpongeEventListener(this));
     }
 
-    @Subscribe
-    public void onShutdown(ServerStoppingEvent event) {
+    @Listener
+    public void onShutdown(GameStoppingServerEvent event) {
         engine.getEventBus().post(new org.getlwc.event.server.ServerStoppingEvent());
         engine = null;
         instance = null;
@@ -112,7 +109,7 @@ public class SpongePlugin {
      * @param player
      * @return
      */
-    public Player wrapPlayer(org.spongepowered.api.entity.player.Player player) {
+    public Player wrapPlayer(org.spongepowered.api.entity.living.player.Player player) {
         Player res = layer.getPlayer(player.getName());
 
         if (!res.getLocale().getName().equalsIgnoreCase(player.getLocale().toString())) {
@@ -129,13 +126,13 @@ public class SpongePlugin {
      * @param entity
      * @return
      */
-	public Entity wrapEntity(org.spongepowered.api.entity.Entity entity) {
-        if (entity instanceof org.spongepowered.api.entity.player.Player) {
-            return wrapPlayer((org.spongepowered.api.entity.player.Player) entity);
+    public Entity wrapEntity(org.spongepowered.api.entity.Entity entity) {
+        if (entity instanceof org.spongepowered.api.entity.living.player.Player) {
+            return wrapPlayer((org.spongepowered.api.entity.living.player.Player) entity);
         } else {
             return new SpongeEntity(entity);
         }
-	}
+    }
 
     /**
      * Wraps the given sponge block
@@ -185,15 +182,6 @@ public class SpongePlugin {
      */
     public Engine getEngine() {
         return engine;
-    }
-
-    /**
-     * Get the game this plugin is using
-     *
-     * @return
-     */
-    public Game getGame() {
-        return game;
     }
 
     /**

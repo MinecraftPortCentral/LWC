@@ -28,18 +28,20 @@
  */
 package org.getlwc.sponge.listeners;
 
+import java.util.Optional;
+
 import org.getlwc.Block;
 import org.getlwc.EventHelper;
 import org.getlwc.entity.Entity;
 import org.getlwc.entity.Player;
 import org.getlwc.sponge.SpongePlugin;
+import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.EntityInteractBlockEvent;
-import org.spongepowered.api.event.entity.player.PlayerInteractBlockEvent;
-import org.spongepowered.api.event.entity.player.PlayerInteractEntityEvent;
-import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.util.Tristate;
 
 public class SpongeEventListener {
 
@@ -49,29 +51,36 @@ public class SpongeEventListener {
         this.plugin = plugin;
     }
 
-    @Subscribe
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        EventHelper.onPlayerJoin(plugin.wrapPlayer(event.getEntity()));
+    @Listener
+    public void onPlayerJoin(ClientConnectionEvent.Join event) {
+        EventHelper.onPlayerJoin(plugin.wrapPlayer(event.getTargetEntity()));
     }
 
-    @Subscribe
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        EventHelper.onPlayerQuit(plugin.wrapPlayer(event.getEntity()));
+    @Listener
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event) {
+        EventHelper.onPlayerQuit(plugin.wrapPlayer(event.getTargetEntity()));
     }
 
-    @Subscribe(order = Order.FIRST, ignoreCancelled = true)
-    public void onPlayerInteractBlock(PlayerInteractBlockEvent event) {
-        Player player = plugin.wrapPlayer(event.getEntity());
-        Block block = plugin.wrapBlock(event.getLocation());
+    @IsCancelled(Tristate.UNDEFINED)
+    @Listener(order = Order.FIRST)
+    public void onPlayerInteractBlock(InteractBlockEvent event) {
+        Optional<org.spongepowered.api.entity.living.player.Player> playerOpt = event.getCause().first(org.spongepowered.api.entity.living.player.Player.class);
+        if (!playerOpt.isPresent()) {
+            return;
+        }
+
+        Player player = plugin.wrapPlayer(playerOpt.get());
+        Block block = plugin.wrapBlock(event.getTargetBlock().getLocation().get());
 
         if (EventHelper.onBlockInteract(player, block)) {
             event.setCancelled(true);
         }
     }
 
-    @Subscribe(order = Order.FIRST, ignoreCancelled = true)
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = plugin.wrapPlayer(event.getEntity());
+    @IsCancelled(Tristate.UNDEFINED)
+    @Listener(order = Order.FIRST)
+    public void onPlayerInteractEntity(InteractEntityEvent event) {
+        Player player = plugin.wrapPlayer((org.spongepowered.api.entity.living.player.Player) event.getTargetEntity());
         Entity target = plugin.wrapEntity(event.getTargetEntity());
 
         if (EventHelper.onEntityInteract(player, target)) {
@@ -79,10 +88,16 @@ public class SpongeEventListener {
         }
     }
 
-    @Subscribe(order = Order.FIRST, ignoreCancelled = true)
-    public void onEntityInteractBlock(EntityInteractBlockEvent event) {
-        Entity entity = plugin.wrapEntity(event.getEntity());
-        Block block = plugin.wrapBlock(event.getLocation());
+    @IsCancelled(Tristate.UNDEFINED)
+    @Listener(order = Order.FIRST)
+    public void onEntityInteractBlock(InteractBlockEvent event) {
+        Optional<org.spongepowered.api.entity.Entity> entityOpt = event.getCause().first(org.spongepowered.api.entity.Entity.class);
+        if (!entityOpt.isPresent()) {
+            return;
+        }
+
+        Entity entity = plugin.wrapEntity(entityOpt.get());
+        Block block = plugin.wrapBlock(event.getTargetBlock().getLocation().get());
 
         if (EventHelper.onBlockInteract(entity, block)) {
             event.setCancelled(true);

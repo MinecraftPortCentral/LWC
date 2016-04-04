@@ -30,7 +30,7 @@ package org.getlwc;
 
 public class Version {
 
-	public static final String PLUGIN_ID = "LWC";
+	public static final String PLUGIN_ID = "org.getlwc.lwc";
 	public static final String PLUGIN_NAME = "LWC";
 	public static final String PLUGIN_VERSION = "0.1";
 }

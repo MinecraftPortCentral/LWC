@@ -34,6 +34,7 @@ import org.getlwc.entity.Player;
 import org.getlwc.sponge.entity.SpongePlayer;
 import org.getlwc.sponge.world.SpongeExtent;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -64,7 +65,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     public String getImplementationVersion() {
-        return game.getPlatform().getApiVersion();
+        return Sponge.getPlatform().getImplementation().getVersion().get();
     }
 
     @Override
@@ -74,7 +75,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     protected Player internalGetPlayer(String playerName) {
-        org.spongepowered.api.entity.player.Player player = game.getServer().getPlayer(playerName).orNull();
+        org.spongepowered.api.entity.living.player.Player player = game.getServer().getPlayer(playerName).orElse(null);
 
         if (player != null) {
             return new SpongePlayer(player);
@@ -85,7 +86,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     protected World internalGetWorld(String worldName) {
-        org.spongepowered.api.world.World world = game.getServer().getWorld(worldName).orNull();
+        org.spongepowered.api.world.World world = game.getServer().getWorld(worldName).orElse(null);
 
         if (world != null) {
             return new SpongeExtent(world);
@@ -96,7 +97,7 @@ public class SpongeServerLayer extends ServerLayer {
 
     @Override
     protected World internalGetWorld(UUID uuid) {
-        org.spongepowered.api.world.World world = game.getServer().getWorld(uuid).orNull();
+        org.spongepowered.api.world.World world = game.getServer().getWorld(uuid).orElse(null);
 
         if (world != null) {
             return new SpongeExtent(world);

@@ -28,23 +28,22 @@
  */
 package org.getlwc.sponge;
 
-import com.google.common.base.Optional;
-
 import org.getlwc.command.Command;
 import org.getlwc.command.CommandContext;
 import org.getlwc.command.CommandSender;
 import org.getlwc.command.ConsoleCommandSender;
 import org.getlwc.event.Listener;
 import org.getlwc.event.engine.BaseCommandRegisteredEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EngineEventListener {
 
@@ -61,9 +60,8 @@ public class EngineEventListener {
 
         CommandCallable callable = new CommandCallable() {
 
-			@Override
-			public CommandResult process(CommandSource source, String arguments)
-					throws CommandException {
+            @Override
+            public CommandResult process(CommandSource source, String arguments) throws CommandException {
                 CommandSender sender = commandSourceToSender(source);
                 CommandContext.Type type = (sender instanceof ConsoleCommandSender) ? CommandContext.Type.SERVER : CommandContext.Type.PLAYER;
 
@@ -77,7 +75,7 @@ public class EngineEventListener {
                     sender.sendMessage("&4[LWC] An internal error occurred while processing this command");
                     return CommandResult.empty();
                 }
-			}
+            }
 
             @Override
             public boolean testPermission(CommandSource source) {
@@ -88,20 +86,20 @@ public class EngineEventListener {
                 }
             }
 
-			@Override
-			public Optional<? extends Text> getShortDescription(CommandSource arg0) {
-                return Optional.of((Text) Texts.of(command.description()));
+            @Override
+            public Optional<? extends Text> getShortDescription(CommandSource arg0) {
+                return Optional.of(Text.of(command.description()));
             }
 
-			@Override
-			public Optional<? extends Text> getHelp(CommandSource arg0) {
+            @Override
+            public Optional<? extends Text> getHelp(CommandSource arg0) {
                 // TODO is help just a longer description?
-                return Optional.of((Text) Texts.of(command.description()));
+                return Optional.of(Text.of(command.description()));
             }
 
-			@Override
-			public Text getUsage(CommandSource arg0) {
-                return Texts.of(command.usage());
+            @Override
+            public Text getUsage(CommandSource arg0) {
+                return Text.of(command.usage());
             }
 
             @Override
@@ -111,7 +109,7 @@ public class EngineEventListener {
 
         };
 
-        plugin.getGame().getCommandDispatcher().register(plugin, callable, baseCommand);
+        Sponge.getCommandManager().register(plugin, callable, baseCommand);
     }
 
     /**
@@ -120,8 +118,8 @@ public class EngineEventListener {
      * @return
      */
     private CommandSender commandSourceToSender(CommandSource source) {
-        if (source instanceof org.spongepowered.api.entity.player.Player) {
-            return plugin.wrapPlayer((org.spongepowered.api.entity.player.Player) source);
+        if (source instanceof org.spongepowered.api.entity.living.player.Player) {
+            return plugin.wrapPlayer((org.spongepowered.api.entity.living.player.Player) source);
         } else {
             return  plugin.getEngine().getConsoleSender();
         }
