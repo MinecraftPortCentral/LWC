@@ -32,7 +32,7 @@ import org.getlwc.Block;
 import org.getlwc.BlockType;
 import org.getlwc.SimpleEngine;
 import org.getlwc.World;
-import org.getlwc.sponge.SpongePlugin;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 
 public class SpongeBlock extends Block {
@@ -52,7 +52,7 @@ public class SpongeBlock extends Block {
 
     @Override
     public byte getData() {
-    	return 0;
+        return 0;
         //return handle.getBlock().getDataValue();
     }
 
@@ -78,7 +78,7 @@ public class SpongeBlock extends Block {
 
     @Override
     public void setType(BlockType type) {
-        org.spongepowered.api.block.BlockType dest = SpongePlugin.instance.getGame().getRegistry().getType(org.spongepowered.api.block.BlockType.class, type.getId()).orNull();
+        org.spongepowered.api.block.BlockType dest = Sponge.getRegistry().getType(org.spongepowered.api.block.BlockType.class, type.getId()).orElse(null);
 
         if (dest != null) {
             handle.setBlockType(dest);

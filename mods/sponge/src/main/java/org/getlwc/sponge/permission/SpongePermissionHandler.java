@@ -34,21 +34,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.getlwc.entity.Player;
 import org.getlwc.permission.PermissionHandler;
-import org.spongepowered.api.service.ServiceReference;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
 public class SpongePermissionHandler implements PermissionHandler {
-    private final ServiceReference<PermissionService> permService;
+    private final PermissionService permService;
 
-    public SpongePermissionHandler(ServiceReference<PermissionService> permService) {
+    public SpongePermissionHandler(PermissionService permService) {
         this.permService = permService;
     }
 
@@ -69,11 +67,8 @@ public class SpongePermissionHandler implements PermissionHandler {
 
     @Override
     public Set<String> getGroups(Player player) {
-        if (!this.permService.ref().isPresent()) {
-            return ImmutableSet.of();
-        }
-        final SubjectCollection groupColl = this.permService.ref().get().getGroupSubjects();
-        List<Subject> parent = this.permService.ref().get().getUserSubjects().get(player.getUUID().toString()).getParents();
+        final SubjectCollection groupColl = this.permService.getGroupSubjects();
+        List<Subject> parent = this.permService.getUserSubjects().get(player.getUUID().toString()).getParents();
         return ImmutableSet.copyOf(Iterables.transform(Iterables.filter(parent, new Predicate<Subject>() {
             @Override
             public boolean apply(Subject input) {

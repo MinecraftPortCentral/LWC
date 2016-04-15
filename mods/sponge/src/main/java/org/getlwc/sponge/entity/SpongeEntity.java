@@ -29,6 +29,7 @@
 package org.getlwc.sponge.entity;
 
 import com.flowpowered.math.vector.Vector3d;
+
 import org.getlwc.Location;
 import org.getlwc.entity.Entity;
 import org.getlwc.sponge.world.SpongeExtent;
